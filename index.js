@@ -65,6 +65,17 @@ async function run() {
       .db("school-management")
       .collection("teachers");
 
+    const headmasterCollection = client
+      .db("school-management")
+      .collection("headmaster");
+    const stuffsCollection = client
+      .db("school-management")
+      .collection("stuffs");
+
+    const porishodCollection = client
+      .db("school-management")
+      .collection("porishod");
+
     const sovapotireBaniCollection = client
       .db("school-management")
       .collection("sovapoti");
@@ -202,6 +213,107 @@ async function run() {
     });
 
     /* -------------------------------------------------------------------------- */
+    /*                              HEADMASTER ROUTES                             */
+    /* -------------------------------------------------------------------------- */
+    //TODO: ADD TEACHER INFORMATION ROUTE
+    app.post("/add-headmaster", upload.single("image"), async (req, res) => {
+      try {
+        const { filename } = req.file;
+        if (!req.file) {
+          return res.send("File Not found ");
+        }
+        const headmaster = req.body;
+        const result = await headmasterCollection.insertOne({
+          ...headmaster,
+          image: filename ? filename : "",
+        });
+
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // TODO: GET HEADMASTER'S ALL INFORMATION ROUTE
+    app.get("/all-headmasterinformation", async (req, res) => {
+      try {
+        const result = await headmasterCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: GET SINGLE HEADMASTER ROUTE
+    app.get("/single-headmaster/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await headmasterCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: DELETE HEADMASTER ROUTE
+    app.delete("/delete-headmaster/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        console.log({ id });
+        const query = { _id: new ObjectId(id) };
+
+        const result = await headmasterCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: UPDATE HEADMASTER INFO ROUTE
+    app.patch(
+      "/update-headmasterinformation/:id",
+      upload.single("image"),
+      async (req, res) => {
+        try {
+          const id = req.params.id;
+          const updated = req.body;
+          // Remove undefined or empty string values from the updated object
+          Object.keys(updated).forEach((key) =>
+            updated[key] === undefined || updated[key] === ""
+              ? delete updated[key]
+              : null
+          );
+
+          const options = {
+            upsert: true,
+          };
+
+          const filter = { _id: new ObjectId(id) };
+          const updateDoc = {
+            $set: {
+              ...updated,
+            },
+          };
+
+          const result = await headmasterCollection.updateOne(
+            filter,
+            updateDoc,
+            options
+          );
+          res.send(result);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    );
+    /* -------------------------------------------------------------------------- */
     /*                               TEACHER ROUTES                               */
     /* -------------------------------------------------------------------------- */
     //TODO: ADD TEACHER INFORMATION ROUTE
@@ -265,25 +377,209 @@ async function run() {
       }
     });
 
-    
     // TODO: UPDATE TEACHER INFO ROUTE
-    app.put(
+    app.patch(
       "/update-teacherinformation/:id",
       upload.single("image"),
       async (req, res) => {
-        console.log(req.body);
         try {
           const id = req.params.id;
           const updated = req.body;
 
+          // Remove undefined or empty string values from the updated object
+          Object.keys(updated).forEach((key) =>
+            updated[key] === undefined || updated[key] === ""
+              ? delete updated[key]
+              : null
+          );
+
           const filter = { _id: new ObjectId(id) };
           const updateDoc = {
             $set: {
-              updated,
+              ...updated,
             },
           };
 
           const result = await teachersCollection.updateOne(filter, updateDoc);
+          res.send(result);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    );
+
+    //TODO: ADD STUFF INFORMATION ROUTE
+    app.post("/add-stuff", upload.single("image"), async (req, res) => {
+      try {
+        const { filename } = req.file;
+        if (!req.file) {
+          return res.send("File Not found ");
+        }
+        const stuffs = req.body;
+        const result = await stuffsCollection.insertOne({
+          ...stuffs,
+          image: filename ? filename : "",
+        });
+
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // TODO: GET ALL STUFF ROUTE
+    app.get("/all-stuff", async (req, res) => {
+      try {
+        const result = await stuffsCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: GET SINGLE STUFF ROUTE
+    app.get("/single-stuff/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await stuffsCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: DELETE STUFF ROUTE
+    app.delete("/delete-stuff/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await stuffsCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: UPDATE STUFF INFO ROUTE
+    app.patch("/update-stuff/:id", upload.single("image"), async (req, res) => {
+      try {
+        const id = req.params.id;
+        const updated = req.body;
+
+        // Remove undefined or empty string values from the updated object
+        Object.keys(updated).forEach((key) =>
+          updated[key] === undefined || updated[key] === ""
+            ? delete updated[key]
+            : null
+        );
+
+        const filter = { _id: new ObjectId(id) };
+        const updateDoc = {
+          $set: {
+            ...updated,
+          },
+        };
+
+        const result = await stuffsCollection.updateOne(filter, updateDoc);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    /* ------------------------- TODO: PORSHOD PORISHOD ------------------------- */
+    //TODO: ADD PORISHOD PORSHOD INFORMATION ROUTE
+    app.post("/add-porishod", upload.single("image"), async (req, res) => {
+      try {
+        const { filename } = req.file;
+        if (!req.file) {
+          return res.send("File Not found ");
+        }
+        const porishod = req.body;
+        const result = await porishodCollection.insertOne({
+          ...porishod,
+          image: filename ? filename : "",
+        });
+
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // TODO: GET ALL PORISHOD ROUTE
+    app.get("/all-porishod", async (req, res) => {
+      try {
+        const result = await porishodCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: GET SINGLE PORISHOD ROUTE
+    app.get("/single-porishod/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await porishodCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: DELETE PORISHOD ROUTE
+    app.delete("/delete-porishod/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await porishodCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: UPDATE PORISHOD INFO ROUTE
+    app.patch(
+      "/update-porishod/:id",
+      upload.single("image"),
+      async (req, res) => {
+        try {
+          const id = req.params.id;
+          const updated = req.body;
+
+          // Remove undefined or empty string values from the updated object
+          Object.keys(updated).forEach((key) =>
+            updated[key] === undefined || updated[key] === ""
+              ? delete updated[key]
+              : null
+          );
+
+          const filter = { _id: new ObjectId(id) };
+          const updateDoc = {
+            $set: {
+              ...updated,
+            },
+          };
+
+          const result = await porishodCollection.updateOne(filter, updateDoc);
           res.send(result);
         } catch (error) {
           console.log(error);
@@ -297,8 +593,12 @@ async function run() {
     app.post("/add-sovapotirbani", async (req, res) => {
       try {
         const message = req.body;
+        const bani = {
+          ...message,
+          createdAt: Date.now(),
+        };
 
-        const result = await sovapotireBaniCollection.insertOne(message);
+        const result = await sovapotireBaniCollection.insertOne(bani);
         res.send(result);
       } catch (error) {
         console.log(error);
@@ -346,7 +646,10 @@ async function run() {
     // TODO: GET SOVAPOTIR DATA ROUTE
     app.get("/sovapotirbani", async (req, res) => {
       try {
-        const result = await sovapotireBaniCollection.find().toArray();
+        const result = await sovapotireBaniCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
         res.send(result);
       } catch (error) {
         console.log(error);
