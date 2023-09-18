@@ -152,8 +152,7 @@ async function run() {
       const currentPage = parseInt(req.query.currentPage) || 0;
 
       const skip = currentPage * routinePerPage;
-      console.log({ skip });
-      // console.log({ routinePerPage, currentPage, skip });
+
       try {
         const result = await routinesCollection
           .find()
@@ -263,6 +262,7 @@ async function run() {
         const result = await headmasterCollection
           .find()
           .sort({ createdAt: -1 })
+          .limit(1)
           .toArray();
         res.send(result);
       } catch (error) {
@@ -547,7 +547,7 @@ async function run() {
         const result = await schoolInformationCollection
           .find()
           .sort({ createdAt: -1 })
-
+          .limit(1)
           .toArray();
         res.send(result);
       } catch (error) {
@@ -820,6 +820,7 @@ async function run() {
         const result = await instituteInfoCollection
           .find()
           .sort({ createAt: -1 })
+          .limit(1)
           .toArray();
 
         res.send(result);
