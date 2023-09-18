@@ -147,17 +147,10 @@ async function run() {
     });
     // TODO: GET ALL ROUTINE ROUTE
     app.get("/all-routine", async (req, res) => {
-      console.log(req.query);
-      const routinePerPage = parseInt(req.query.routinePerPage) || 3;
-      const currentPage = parseInt(req.query.currentPage) || 0;
-
-      const skip = currentPage * routinePerPage;
-
       try {
         const result = await routinesCollection
           .find()
-          .skip(skip)
-          .limit(routinePerPage)
+
           .sort({ createdAt: -1 })
           .toArray();
         res.send(result);
@@ -173,12 +166,6 @@ async function run() {
       const filter = { _id: new ObjectId(id) };
       const result = await routinesCollection.deleteOne(filter);
       res.send(result);
-    });
-
-    // TODO: TOTAL ROUTINE NUMBER
-    app.get("/total-routine-count", async (req, res) => {
-      const result = await routinesCollection.estimatedDocumentCount();
-      res.send({ result });
     });
 
     /* -------------------------------------------------------------------------- */
