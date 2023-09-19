@@ -86,6 +86,9 @@ async function run() {
     const instituteInfoCollection = client
       .db("school-management")
       .collection("instituteinformation");
+    const instituteImagesCollection = client
+      .db("school-management")
+      .collection("institute-images");
 
     /* -------------------------------------------------------------------------- */
     /*                          FILE UPLOAD FUNCTIONALITY                         */
@@ -779,21 +782,51 @@ async function run() {
       }
     });
 
-    // TODO: ADD INSTITUTE INFORMATION
+    // TODO: ADD INSTITUTE IMAGES
+    app.post(
+      "/add-instituteimages",
+      upload.array("images"),
+      async (req, res) => {
+        try {
+          const uploadedFiles = req.files.map((file) => {
+            return {
+              filename: file.filename,
+            };
+          });
+
+          const information = {
+            image: uploadedFiles,
+            createAt: Date.now(),
+          };
+          const result = await instituteImagesCollection.insertOne(information);
+          res.send(result);
+        } catch (error) {
+          console.log(error);
+          res.send("There was a server side error");
+        }
+      }
+    );
+
+    // TODO: GET INSTITUTE IMAGES
+    app.get("/instituteimages", async (req, res) => {
+      try {
+        const result = await instituteImagesCollection
+          .find()
+          .sort({ createAt: -1 })
+          .limit(1)
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
     app.post("/add-instituteinfo", upload.array("images"), async (req, res) => {
       try {
         const { message } = req.body;
-        const uploadedFiles = req.files.map((file) => {
-          return {
-            filename: file.filename,
-          };
-        });
 
-        const information = {
-          description: message,
-          image: uploadedFiles,
-        };
-        const result = await instituteInfoCollection.insertOne(information);
+        const result = await instituteInfoCollection.insertOne(message);
         res.send(result);
       } catch (error) {
         console.log(error);
