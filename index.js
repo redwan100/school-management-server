@@ -71,6 +71,10 @@ async function run() {
     const headmasterCollection = client
       .db("school-management")
       .collection("headmaster");
+    const headmasterBaniCollection = client
+      .db("school-management")
+      .collection("headmaster-bani");
+
     const stuffsCollection = client
       .db("school-management")
       .collection("stuffs");
@@ -238,6 +242,7 @@ async function run() {
         const result = await headmasterCollection.insertOne({
           ...headmaster,
           image: filename ? filename : "",
+          createdAt: Date.now(),
         });
 
         res.send(result);
@@ -326,6 +331,87 @@ async function run() {
         }
       }
     );
+
+    // TODO: ADD HEADMASTER BANI
+    app.post("/add-headmasterbani", async (req, res) => {
+      try {
+        const message = req.body;
+        const bani = {
+          ...message,
+          createdAt: Date.now(),
+        };
+
+        const result = await headmasterBaniCollection.insertOne(bani);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: UPDATE HEADMASTER BANI ROUTE
+    app.patch("/update-headmasterbani/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const { description } = req.body;
+        console.log(description);
+        const filter = { _id: new ObjectId(id) };
+        const updateDoc = {
+          $set: {
+            description,
+          },
+        };
+
+        const result = await headmasterBaniCollection.updateOne(
+          filter,
+          updateDoc
+        );
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // TODO: DELETE SOVAPOTIR BANI ROUTE
+    app.delete("/delete-headmasterbani/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await headmasterBaniCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: GET HEADMASTERBANI DATA ROUTE
+    app.get("/headmasterbani", async (req, res) => {
+      try {
+        const result = await headmasterBaniCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+    // TODO: GET SINGLE HEADMASTERBANI DATA ROUTE
+    app.get("/single-headmasterbani/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await headmasterBaniCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
     /* -------------------------------------------------------------------------- */
     /*                               TEACHER ROUTES                               */
     /* -------------------------------------------------------------------------- */
@@ -769,6 +855,7 @@ async function run() {
         res.send("There was a server side error");
       }
     });
+
     // TODO: GET SINGLE SOVAPOTIR DATA ROUTE
     app.get("/single-sovapotirbani/:id", async (req, res) => {
       try {
