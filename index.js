@@ -93,6 +93,9 @@ async function run() {
     const instituteImagesCollection = client
       .db("school-management")
       .collection("institute-images");
+    const classInformationCollection = client
+      .db("school-management")
+      .collection("class-information");
 
     /* -------------------------------------------------------------------------- */
     /*                          FILE UPLOAD FUNCTIONALITY                         */
@@ -930,6 +933,94 @@ async function run() {
           .limit(1)
           .toArray();
 
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error ");
+      }
+    });
+
+    /* -------------------------------------------------------------------------- */
+    /*                       TODO: CLASS INFORMATION ROUTES                       */
+    /* -------------------------------------------------------------------------- */
+    app.post("/classinfo", async (req, res) => {
+      try {
+        const classes = req.body;
+        const classInfo = {
+          ...classes,
+          createdAt: Date.now(),
+        };
+        const result = await classInformationCollection.insertOne(classInfo);
+        res.send(result);
+      } catch (error) {}
+    });
+
+    app.get("/all-classinfo", async (req, res) => {
+      try {
+        const result = await classInformationCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error ");
+      }
+    });
+
+    // TODO: UPDATE CLASS INFO ROUTE
+    app.patch(
+      "/update-classinfo/:id",
+
+      async (req, res) => {
+        try {
+          const id = req.params.id;
+          const updated = req.body;
+
+          // Remove undefined or empty string values from the updated object
+          Object.keys(updated).forEach((key) =>
+            updated[key] === undefined || updated[key] === ""
+              ? delete updated[key]
+              : null
+          );
+
+          const filter = { _id: new ObjectId(id) };
+          const updateDoc = {
+            $set: {
+              ...updated,
+            },
+          };
+
+          const result = await classInformationCollection.updateOne(
+            filter,
+            updateDoc
+          );
+          res.send(result);
+        } catch (error) {
+          console.log(error);
+          res.send("There was a server side error ");
+        }
+      }
+    );
+
+    // TODO: GET SINGLE CLASS INFO
+    app.get("/single-classinfo/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await classInformationCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error ");
+      }
+    });
+    // TODO: GET SINGLE CLASS INFO
+    app.delete("/delete-classinfo/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await classInformationCollection.deleteOne(query);
         res.send(result);
       } catch (error) {
         console.log(error);
