@@ -30,8 +30,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// middleware for jwt token
-
 // const uri = "mongodb://localhost:27017";
 const uri =
   "mongodb+srv://school-management:d4VT3wbI3v1qCV7Z@cluster0.yq2vgbi.mongodb.net/";
@@ -335,7 +333,7 @@ async function run() {
       }
     );
 
-    // TODO: ADD HEADMASTER BANI
+    // TODO: ADD HEADMASTER MESSAGE
     app.post("/add-headmasterbani", async (req, res) => {
       try {
         const message = req.body;
@@ -352,7 +350,7 @@ async function run() {
       }
     });
 
-    // TODO: UPDATE HEADMASTER BANI ROUTE
+    // TODO: UPDATE HEADMASTER MESSAGE ROUTE
     app.patch("/update-headmasterbani/:id", async (req, res) => {
       try {
         const id = req.params.id;
@@ -389,7 +387,7 @@ async function run() {
       }
     });
 
-    // TODO: GET HEADMASTERBANI DATA ROUTE
+    // TODO: GET HEADMASTER MESSAGE DATA ROUTE
     app.get("/headmasterbani", async (req, res) => {
       try {
         const result = await headmasterBaniCollection
@@ -1097,7 +1095,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Review Radar is running!");
+  res.send("Institute management system  is running!");
 });
 
 app.use((err, req, res, next) => {
