@@ -77,9 +77,13 @@ async function run() {
       .db("school-management")
       .collection("stuffs");
 
-    const porishodCollection = client
+    const presidentCollection = client
       .db("school-management")
-      .collection("porishod");
+      .collection("president");
+
+    const committeeCollection = client
+      .db("school-management")
+      .collection("committee");
 
     const sovapotireBaniCollection = client
       .db("school-management")
@@ -695,17 +699,17 @@ async function run() {
       }
     );
 
-    /* ------------------------- TODO: PORSHOD PORISHOD ------------------------- */
-    //TODO: ADD PORISHOD PORSHOD INFORMATION ROUTE
-    app.post("/add-porishod", upload.single("image"), async (req, res) => {
+    /* ------------------------- TODO: PRESIDENT ------------------------- */
+    //TODO: ADD PRESIDENT INFORMATION ROUTE
+    app.post("/add-president", upload.single("image"), async (req, res) => {
       try {
         const { filename } = req.file;
         if (!req.file) {
           return res.send("File Not found ");
         }
-        const porishod = req.body;
-        const result = await porishodCollection.insertOne({
-          ...porishod,
+        const president = req.body;
+        const result = await presidentCollection.insertOne({
+          ...president,
           image: filename ? filename : "",
         });
 
@@ -715,10 +719,10 @@ async function run() {
       }
     });
 
-    // TODO: GET ALL PORISHOD ROUTE
-    app.get("/all-porishod", async (req, res) => {
+    // TODO: GET ALL president ROUTE
+    app.get("/all-president", async (req, res) => {
       try {
-        const result = await porishodCollection
+        const result = await presidentCollection
           .find()
           .sort({ createdAt: -1 })
           .toArray();
@@ -729,12 +733,12 @@ async function run() {
       }
     });
 
-    // TODO: GET SINGLE PORISHOD ROUTE
-    app.get("/single-porishod/:id", async (req, res) => {
+    // TODO: GET SINGLE president ROUTE
+    app.get("/single-president/:id", async (req, res) => {
       try {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
-        const result = await porishodCollection.findOne(query);
+        const result = await presidentCollection.findOne(query);
         res.send(result);
       } catch (error) {
         console.log(error);
@@ -742,13 +746,13 @@ async function run() {
       }
     });
 
-    // TODO: DELETE PORISHOD ROUTE
-    app.delete("/delete-porishod/:id", async (req, res) => {
+    // TODO: DELETE president ROUTE
+    app.delete("/delete-president/:id", async (req, res) => {
       try {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
 
-        const result = await porishodCollection.deleteOne(query);
+        const result = await presidentCollection.deleteOne(query);
         res.send(result);
       } catch (error) {
         console.log(error);
@@ -756,9 +760,9 @@ async function run() {
       }
     });
 
-    // TODO: UPDATE PORISHOD INFO ROUTE
+    // TODO: UPDATE president INFO ROUTE
     app.patch(
-      "/update-porishod/:id",
+      "/update-president/:id",
       upload.single("image"),
       async (req, res) => {
         try {
@@ -779,7 +783,100 @@ async function run() {
             },
           };
 
-          const result = await porishodCollection.updateOne(filter, updateDoc);
+          const result = await presidentCollection.updateOne(filter, updateDoc);
+          res.send(result);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    );
+
+    /* -----------------------TODO: INSTITUTE COMMITTEE MEMBER ----------------------- */
+    /* ------------------------- TODO: committee ------------------------- */
+    //TODO: ADD committee INFORMATION ROUTE
+    app.post("/add-committee", upload.single("image"), async (req, res) => {
+      try {
+        const { filename } = req.file;
+        if (!req.file) {
+          return res.send("File Not found ");
+        }
+        const committee = req.body;
+        const result = await committeeCollection.insertOne({
+          ...committee,
+          image: filename ? filename : "",
+        });
+
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // TODO: GET ALL committee ROUTE
+    app.get("/all-committee", async (req, res) => {
+      try {
+        const result = await committeeCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: GET SINGLE committee ROUTE
+    app.get("/single-committee/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await committeeCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: DELETE committee ROUTE
+    app.delete("/delete-committee/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await committeeCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: UPDATE committee INFO ROUTE
+    app.patch(
+      "/update-committee/:id",
+      upload.single("image"),
+      async (req, res) => {
+        try {
+          const id = req.params.id;
+          const updated = req.body;
+
+          // Remove undefined or empty string values from the updated object
+          Object.keys(updated).forEach((key) =>
+            updated[key] === undefined || updated[key] === ""
+              ? delete updated[key]
+              : null
+          );
+
+          const filter = { _id: new ObjectId(id) };
+          const updateDoc = {
+            $set: {
+              ...updated,
+            },
+          };
+
+          const result = await committeeCollection.updateOne(filter, updateDoc);
           res.send(result);
         } catch (error) {
           console.log(error);
