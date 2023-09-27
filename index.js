@@ -99,6 +99,18 @@ async function run() {
       .db("school-management")
       .collection("class-information");
 
+    const instituteCommunicationCollection = client
+      .db("school-management")
+      .collection("institute-communication");
+
+    const importantLinkCollection = client
+      .db("school-management")
+      .collection("important-links");
+
+    const achievementCollection = client
+      .db("school-management")
+      .collection("achievements");
+
     /* -------------------------------------------------------------------------- */
     /*                          FILE UPLOAD FUNCTIONALITY                         */
     /* -------------------------------------------------------------------------- */
@@ -1123,6 +1135,319 @@ async function run() {
       }
     });
 
+    /* ------------------ TODO: INSTITUTE COMMUNICATION ROUTES ------------------ */
+
+    // TODO: ADD COMMUNICATION
+    app.post("/add-communication", async (req, res) => {
+      try {
+        const data = req.body;
+        const communication = {
+          ...data,
+          createdAt: Date.now(),
+        };
+
+        const result = await instituteCommunicationCollection.insertOne(
+          communication
+        );
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: DELETE COMMUNICATION
+    app.delete("/delete-communication/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await instituteCommunicationCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: UPDATE COMMUNICATION
+    app.patch(
+      "/update-communication/:id",
+
+      async (req, res) => {
+        try {
+          const id = req.params.id;
+          const updated = req.body;
+
+          // Remove undefined or empty string values from the updated object
+          Object.keys(updated).forEach((key) =>
+            updated[key] === undefined || updated[key] === ""
+              ? delete updated[key]
+              : null
+          );
+
+          const filter = { _id: new ObjectId(id) };
+          const updateDoc = {
+            $set: {
+              ...updated,
+            },
+          };
+
+          const result = await instituteCommunicationCollection.updateOne(
+            filter,
+            updateDoc
+          );
+          res.send(result);
+        } catch (error) {
+          console.log(error);
+          res.send("There was a server side error ");
+        }
+      }
+    );
+
+    // TODO: GET COMMUNICATION
+    app.get("/communication", async (req, res) => {
+      try {
+        const result = await instituteCommunicationCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .limit(1)
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: GET SINGLE COMMUNICATION
+    app.get("/single-communication/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await instituteCommunicationCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    /* ------------------ TODO: IMPORTANT LINKS ROUTES ------------------ */
+
+    // TODO: ADD IMPORTANT LINKS
+    app.post("/add-importantlinks", async (req, res) => {
+      try {
+        const data = req.body;
+        const communication = {
+          ...data,
+          createdAt: Date.now(),
+        };
+
+        const result = await importantLinkCollection.insertOne(communication);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: DELETE IMPORTANT LINKS
+    app.delete("/delete-importantlinks/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await importantLinkCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: UPDATE IMPORTANT LINKS
+    app.patch(
+      "/update-importantlinks/:id",
+
+      async (req, res) => {
+        try {
+          const id = req.params.id;
+          const updated = req.body;
+
+          // Remove undefined or empty string values from the updated object
+          Object.keys(updated).forEach((key) =>
+            updated[key] === undefined || updated[key] === ""
+              ? delete updated[key]
+              : null
+          );
+
+          const filter = { _id: new ObjectId(id) };
+          const updateDoc = {
+            $set: {
+              ...updated,
+            },
+          };
+
+          const result = await importantLinkCollection.updateOne(
+            filter,
+            updateDoc
+          );
+          res.send(result);
+        } catch (error) {
+          console.log(error);
+          res.send("There was a server side error ");
+        }
+      }
+    );
+
+    // TODO: GET IMPORTANT LINKS
+    app.get("/importantlinks", async (req, res) => {
+      try {
+        const result = await importantLinkCollection
+          .find()
+          .sort({ createdAt: -1 })
+
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: GET SINGLE IMPORTANT LINKS
+    app.get("/single-importantlinks/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await importantLinkCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    /* ------------------ TODO: ACHIEVEMENT ROUTES ------------------ */
+
+    // TODO: ADD IMPORTANT LINKS
+    app.post("/add-achievement", async (req, res) => {
+      try {
+        const data = req.body;
+        const achievement = {
+          ...data,
+          createdAt: Date.now(),
+        };
+
+        const result = await achievementCollection.insertOne(achievement);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: DELETE IMPORTANT LINKS
+    app.delete("/delete-achievement/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+
+        const result = await achievementCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: UPDATE IMPORTANT LINKS
+    app.patch(
+      "/update-achievement/:id",
+
+      async (req, res) => {
+        try {
+          const id = req.params.id;
+          const updated = req.body;
+
+          // Remove undefined or empty string values from the updated object
+          Object.keys(updated).forEach((key) =>
+            updated[key] === undefined || updated[key] === ""
+              ? delete updated[key]
+              : null
+          );
+
+          const filter = { _id: new ObjectId(id) };
+          const updateDoc = {
+            $set: {
+              ...updated,
+            },
+          };
+
+          const result = await achievementCollection.updateOne(
+            filter,
+            updateDoc
+          );
+          res.send(result);
+        } catch (error) {
+          console.log(error);
+          res.send("There was a server side error ");
+        }
+      }
+    );
+
+    // TODO: GET IMPORTANT LINKS
+    app.get("/achievement", async (req, res) => {
+      try {
+        const result = await achievementCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    // TODO: GET SINGLE IMPORTANT LINKS
+    app.get("/single-achievement/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await achievementCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.send("There was a server side error");
+      }
+    });
+
+    app.get("/all-important-links", async (req, res) => {
+      try {
+        // Use the aggregation pipeline to reshape the data
+        const pipeline = [
+          {
+            $project: {
+              _id: 0, // Exclude _id field
+              item: {
+                id: "$_id",
+                name: "$name",
+                http: "$http",
+              },
+            },
+          },
+        ];
+
+        const result = await importantLinkCollection
+          .aggregate(pipeline)
+          .toArray();
+        res.json(result);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    });
     /* -------------------------------------------------------------------------- */
     /*                             ADMIN LOGIN ROUTES                             */
     /* -------------------------------------------------------------------------- */
