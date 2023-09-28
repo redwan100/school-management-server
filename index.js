@@ -1448,6 +1448,46 @@ async function run() {
         res.status(500).json({ error: err.message });
       }
     });
+
+    app.get("/api/data", async (req, res) => {
+      try {
+        const result = await presidentCollection
+          .aggregate([
+            {
+              $project: {
+                _id: 0,
+                name: 1,
+                designation: 0, // Exclude designation
+                image: 1,
+              },
+            },
+            {
+              $lookup: {
+                from: "sovapoti",
+                localField: "name",
+                foreignField: "name",
+                as: "sovapoti",
+              },
+            },
+            {
+              $unwind: "$sovapoti", // Unwind the array created by $lookup (assuming a 1-to-1 relationship)
+            },
+            {
+              $project: {
+                name: 1,
+                description: "$sovapoti.description",
+                image: 1,
+              },
+            },
+          ])
+          .toArray();
+
+        res.send(result);
+      } catch (error) {
+        console.error("API error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
     /* -------------------------------------------------------------------------- */
     /*                             ADMIN LOGIN ROUTES                             */
     /* -------------------------------------------------------------------------- */
